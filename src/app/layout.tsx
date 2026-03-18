@@ -9,7 +9,7 @@ import "./global.css";
  */
 export const metadata: Metadata = {
     title: "Solid List Items",
-    description: "Authn browser & LDO & Next.js",
+    description: "Authn browser & RDF/JS Wrapper & Next.js",
 };
 
 /**

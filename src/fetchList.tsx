@@ -1,6 +1,6 @@
-import { parseRdf } from "@ldo/ldo";
-import { ListShapeType } from "./ldo/Model.shapeTypes";
-import type { List } from "./ldo/Model.typings";
+import * as N3 from "n3";
+import type * as RdfJs from "@rdfjs/types";
+import { List } from "./model/List";
 import { Config } from "./Config";
 
 /**
@@ -28,11 +28,15 @@ export async function fetchList(): Promise<List> {
 
     const rdf = await response.text();
 
-    // BaseIRI used to parse relative URIs
-    const options = { baseIRI: Config.baseUri };
+    // Convert Raw RDF into a JavaScript object.
+    const dataset = parseRdf(rdf);
 
-    // Convert Raw RDF into a Linked Data Object. See: https://ldo.js.org/latest/guides/raw_rdf/
-    const dataset = await parseRdf(rdf, options);
+    return new List("urn:example:list", dataset, N3.DataFactory);
+}
 
-    return dataset.usingType(ListShapeType).fromSubject("urn:example:list");
+function parseRdf(rdf: string): RdfJs.DatasetCore {
+    const store = new N3.Store();
+    store.addQuads(new N3.Parser().parse(rdf));
+
+    return store;
 }

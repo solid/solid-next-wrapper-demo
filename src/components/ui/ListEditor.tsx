@@ -1,14 +1,15 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { toTurtle } from "@ldo/ldo";
+import { Writer } from "n3";
 import {
     login,
     getDefaultSession,
     handleIncomingRedirect,
 } from "@inrupt/solid-client-authn-browser";
 import { useEffect, useState } from "react";
-import { List, Item } from "../../ldo/Model.typings";
+import type { List } from "../../model/List";
+import { Item } from "../../model/Item";
 import { Config } from "../../Config";
 import { ListViewer } from "../../components/ui/ListViewer";
 import { fetchList } from "../../fetchList";
@@ -212,16 +213,16 @@ export function ListEditor() {
         }
 
         // TODO: Why separate? Explain dependent resource
-        await deleteThumbnail(item.thumbnail["@id"]);
+        await deleteThumbnail(item.thumbnail);
 
-        delete item.name;
-        delete item.description;
-        delete item.featured;
-        delete item.website;
-        delete item.thumbnail;
+        item.name = undefined;
+        item.description = undefined;
+        item.featured = undefined;
+        item.website = undefined;
+        item.thumbnail = undefined;
 
         // TODO: Why separate? Explain graph deletion of complex value
-        list?.item?.delete(item);
+        list?.item.delete(item);
 
         save();
 
@@ -232,13 +233,14 @@ export function ListEditor() {
     async function addItem(e: FormEvent) {
         e.preventDefault();
 
-        list?.item?.add({
-            name: newName,
-            description: newDescription,
-            featured: newFeatured,
-            website: { "@id": newWebsite },
-            thumbnail: { "@id": await createNewThumbnail() },
-        });
+        const item = new Item(list!.factory.blankNode(), list!.dataset, list!.factory);
+        list?.item.add(item);
+
+        item.name = newName;
+        item.description = newDescription;
+        item.featured = newFeatured;
+        item.website = newWebsite;
+        item.thumbnail = await createNewThumbnail();
 
         setNewName("");
         setNewDescription("");
@@ -276,4 +278,20 @@ export function ListEditor() {
     async function deleteThumbnail(thumbnail: string) {
         await getDefaultSession().fetch(thumbnail, { method: "delete" });
     }
+}
+
+export function toTurtle(list: List): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const writer = new Writer();
+
+        writer.addQuads([...list.dataset]);
+
+        writer.end((error, result) => {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(result);
+            }
+        });
+    });
 }

@@ -1,6 +1,6 @@
-# Solid + Next.js + LDO: Demo Application
+# Solid + Next.js + RDF/JS Wrapper: Demo Application
 
-This is a minimal Solid Application using [Next.js](https://nextjs.org/) and [LDO](https://ldo.js.org/latest/).
+This is a minimal Solid Application using [Next.js](https://nextjs.org/) and [RDF/JS Wrapper](https://github.com/rdfjs/wrapper).
 
 This app is meant to help developers get started developing for Solid. The code is commented to help understand the development patterns.
 
@@ -48,13 +48,12 @@ Note: `.env` and `.env.local` are ignored by git (see `.gitignore`).
 
 The app can be run locally using npm commands: `install`, `build` and `start:dev`.
 
-The `start:dev` command concurrently runs the [Community Solid Server](https://communitysolidserver.github.io/CommunitySolidServer/latest/), LDO in watch mode (to rebuild the model when changes are made), and Next in dev mode.
+The `start:dev` command concurrently runs the [Community Solid Server](https://communitysolidserver.github.io/CommunitySolidServer/latest/) and Next in dev mode.
 
 1. `npm i`
 1. (Your environments variables must be set before running the build)
 1. `npm run build`
 1. `npm run start:dev`
-    - Starts LDO watching for changes to *.shaclc to regenerate Data Objects
     - Starts next in dev mode watching for changes to *.ts 
         - Runs on http://localhost:3000
     - Starts a Community Solid Server instance
