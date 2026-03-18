@@ -1,4 +1,5 @@
-import type { Item, List } from "../../ldo/Model.typings";
+import type { Item } from "../../model/Item";
+import type { List } from "../../model/List";
 import style from "../../styles/ListEditorStyle.module.css";
 
 /**
@@ -9,8 +10,7 @@ export function ListViewer({
     data,
     deleteHandler,
 }: ListViewerProps): React.ReactNode {
-    // Convert LdSet to array to use standard Array.map() with index support
-    // LdSet.map() has different signature (value, set) instead of (value, index)
+    // Convert Set to array to use standard Array.map() with index support
     const itemsArray = data.item ? Array.from(data.item) : [];
     const items = itemsArray.map((item, index) => renderItem(item, deleteHandler, index));
 
@@ -26,12 +26,9 @@ function renderItem(item: Item, deleteHandler?: ItemHandler, index?: number): Re
         throw new Error("thumbnail is required");
     }
 
-    const website = item.website["@id"];
-    const thumbnail = item.thumbnail["@id"];
-    
     // Fixed: Use unique key to prevent React duplicate key errors
-    // Prefer item's @id, fallback to thumbnail (unique per item), then index as last resort
-    const uniqueKey = item["@id"] || thumbnail || `item-${index}`;
+    // Prefer item's id, fallback to thumbnail (unique per item), then index as last resort
+    const uniqueKey = item.id || item.thumbnail || `item-${index}`;
 
     return (
         <li key={uniqueKey} className={style.list_item}>
@@ -58,13 +55,13 @@ function renderItem(item: Item, deleteHandler?: ItemHandler, index?: number): Re
                 <div className={style.detail_row}>
                     <dt>website</dt>
                     <dd>
-                        <a href={website} className={style.link}>{website}</a>
+                        <a href={item.website} className={style.link}>{item.website}</a>
                     </dd>
                 </div>
                 <div className={style.detail_row}>
                     <dt>thumbnail</dt>
                     <dd>
-                        <img src={thumbnail} alt={`Thumbnail for ${item.name || 'item'}`} className={style.thumbnail} />
+                        <img src={item.thumbnail} alt={`Thumbnail for ${item.name || 'item'}`} className={style.thumbnail} />
                     </dd>
                 </div>
             </dl>
