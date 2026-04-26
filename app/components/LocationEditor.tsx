@@ -3,21 +3,22 @@
 /**
  * LocationEditor.tsx
  *
- * The authenticated editor — shows:
+ * The authenticated editor — will show:
  *   - A map (click to pick a location)
- *   - A label input
- *   - A radius slider
+ *   - A label input + radius slider
  *   - An "Add location" button
  *   - A list of saved LocationCards with remove buttons
  *
- * This component receives authFetch from the parent (passed in from useAuth).
- * All pod writes go through authFetch so they carry DPoP auth headers.
+ * The full UI is commented out below so we can build it live during the tutorial.
+ * The hook and state are already wired up — we just need to write the JSX.
  */
 
 import { useState } from "react";
-import { Map } from "@/app/components/Map";
-import { LocationCard } from "@/app/components/LocationCard";
 import { useLocations } from "@/app/lib/hooks/useLocations";
+
+// ── Imports we'll uncomment during the tutorial ──────────────────────────────
+// import { Map } from "@/app/components/Map";
+// import { LocationCard } from "@/app/components/LocationCard";
 
 type Props = {
   /** Authenticated fetch from useAuth — required for writing to the pod. */
@@ -51,9 +52,20 @@ export function LocationEditor({ authFetch }: Props) {
     setRadiusKm(10);
   }
 
+  // ── Placeholder — replace this return during the tutorial ───────────────────
   return (
     <div className="flex flex-col gap-4">
-      {/* Map — click to pick a point */}
+      <div className="flex h-64 w-full items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50">
+        <p className="text-sm text-gray-400">[ UI goes here — we will build this during the tutorial ]</p>
+      </div>
+    </div>
+  );
+
+  // ── Full UI — uncomment this return during the tutorial ──────────────────────
+  /*
+  return (
+    <div className="flex flex-col gap-4">
+
       <div className="h-64 w-full rounded-lg overflow-hidden border border-gray-200">
         <Map
           markers={locations.map((l) => ({ lat: l.lat, lon: l.lon, label: l.label }))}
@@ -64,7 +76,6 @@ export function LocationEditor({ authFetch }: Props) {
         />
       </div>
 
-      {/* Add form — only shown once a point is picked */}
       {picked && (
         <div className="flex flex-col gap-2 rounded-lg border border-indigo-200 bg-indigo-50 p-3">
           <p className="text-sm font-medium text-indigo-700">
@@ -95,7 +106,6 @@ export function LocationEditor({ authFetch }: Props) {
         </div>
       )}
 
-      {/* Saved locations list */}
       {isLoading && <p className="text-sm text-gray-400">Loading…</p>}
       {error && <p className="text-sm text-red-500">{error}</p>}
       <div className="flex flex-col gap-2">
@@ -112,6 +122,8 @@ export function LocationEditor({ authFetch }: Props) {
           <p className="text-sm text-gray-400">No locations saved yet. Click the map to add one.</p>
         )}
       </div>
+
     </div>
   );
+  */
 }
