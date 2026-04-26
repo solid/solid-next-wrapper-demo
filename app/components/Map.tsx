@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * Map.tsx
  *

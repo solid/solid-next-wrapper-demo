@@ -20,7 +20,6 @@
 
 import { useEffect, useState } from "react";
 import {
-  handleIncomingRedirect,
   getDefaultSession,
   login as solidLogin,
 } from "@inrupt/solid-client-authn-browser";
@@ -37,13 +36,29 @@ export function useAuth(): AuthState {
   const [webId, setWebId] = useState<string | undefined>();
 
   useEffect(() => {
-    // Complete the OIDC redirect on mount — this resolves the session if the
-    // browser just returned from the identity provider's login page.
-    handleIncomingRedirect({ restorePreviousSession: true }).then(() => {
-      const session = getDefaultSession();
-      setIsLoggedIn(session.info.isLoggedIn);
-      setWebId(session.info.webId);
-    });
+    const session = getDefaultSession();
+
+    // Read current state — AuthProvider in layout.tsx may have already
+    // completed handleIncomingRedirect by the time this hook runs.
+    setIsLoggedIn(session.info.isLoggedIn);
+    setWebId(session.info.webId);
+
+    // Listen for session changes so the UI updates reactively:
+    //   "login"          — OIDC redirect completed successfully
+    //   "sessionRestore" — silent re-login on page refresh
+    //   "logout"         — user logged out
+    const onLogin = () => { setIsLoggedIn(true);  setWebId(getDefaultSession().info.webId); };
+    const onLogout = () => { setIsLoggedIn(false); setWebId(undefined); };
+
+    session.events.on("login", onLogin);
+    session.events.on("sessionRestore", onLogin);
+    session.events.on("logout", onLogout);
+
+    return () => {
+      session.events.off("login", onLogin);
+      session.events.off("sessionRestore", onLogin);
+      session.events.off("logout", onLogout);
+    };
   }, []);
 
   async function login() {
